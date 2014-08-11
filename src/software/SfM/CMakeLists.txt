@@ -1,7 +1,15 @@
 
+SET(LIBS ${EXTRA_LIBS}
+  openMVG_multiview
+  openMVG_image
+  lemon
+  stlplus
+  ${OPENMVG_LIBRARY_DEPENDENCIES})
+
+
 ADD_EXECUTABLE(openMVG_main_CreateList main_CreateList.cpp)
 TARGET_LINK_LIBRARIES(openMVG_main_CreateList
-                     ${OpenMVG_LIBS} easyexif)
+                     ${LIBS} ${EXIV2_LIBRARIES} OpenExif)
 
 #Add executable that computes:
 # - features and descriptors
@@ -10,7 +18,7 @@ TARGET_LINK_LIBRARIES(openMVG_main_CreateList
 #
 ADD_EXECUTABLE(openMVG_main_computeMatches main_computeMatches.cpp)
 TARGET_LINK_LIBRARIES(openMVG_main_computeMatches
-                     ${OpenMVG_LIBS})
+                     ${LIBS} flann_cpp_s)
 
 #Add library and executable that perform SfM:
 # - the required input is matches computed by openMVG_main_computeMatches
@@ -18,8 +26,7 @@ TARGET_LINK_LIBRARIES(openMVG_main_computeMatches
 ADD_LIBRARY(openMVG_SfM_Sequential SfMIncrementalEngine.cpp)
 ADD_EXECUTABLE(openMVG_main_IncrementalSfM main_IncrementalSfM.cpp)
 TARGET_LINK_LIBRARIES(openMVG_main_IncrementalSfM
-                      openMVG_SfM_Sequential
-                      ${OpenMVG_LIBS})
+                      openMVG_SfM_Sequential  ${LIBS}  ceres)
 
 #---------
 # Tools to visualize feature tracking data
@@ -32,48 +39,47 @@ TARGET_LINK_LIBRARIES(openMVG_main_IncrementalSfM
 #
 ADD_EXECUTABLE(openMVG_main_exportKeypoints main_exportKeypoints.cpp)
 TARGET_LINK_LIBRARIES(openMVG_main_exportKeypoints
-                     ${OpenMVG_LIBS})
+                     ${LIBS})
 
 # - View of the computed matches (putatives, geometrics) per image pair
 #
 ADD_EXECUTABLE(openMVG_main_exportMatches main_exportMatches.cpp)
 TARGET_LINK_LIBRARIES(openMVG_main_exportMatches
-                     ${OpenMVG_LIBS})
+                     ${LIBS})
 
 # - View of the tracks per image pair
 #
 ADD_EXECUTABLE(openMVG_main_exportTracks main_exportTracks.cpp)
 TARGET_LINK_LIBRARIES(openMVG_main_exportTracks
-                     ${OpenMVG_LIBS})
+                     ${LIBS})
 
 # - Export a computed SfM_Ouput scene to PMVS format
 #
 ADD_EXECUTABLE(openMVG_main_openMVG2PMVS main_openMVG2PMVS.cpp)
 TARGET_LINK_LIBRARIES(openMVG_main_openMVG2PMVS
-                     ${OpenMVG_LIBS})
+                     ${LIBS})
 
 # - Export a computed SfM_Ouput scene to CMPMVS format
 #
 ADD_EXECUTABLE(openMVG_main_openMVG2CMPMVS main_openMVG2CMPMVS.cpp)
 TARGET_LINK_LIBRARIES(openMVG_main_openMVG2CMPMVS
-                     ${OpenMVG_LIBS})
+                     ${LIBS})
 
 # -
 # Use openCV Feature detector with the openMVG matching framework
 # -
 IF(USE_OPENCV)
-  FIND_PACKAGE( OpenCV )
+ # FIND_PACKAGE( OpenCV )
 
-  IF(NOT OpenCV_FOUND)
-    MESSAGE(STATUS "WARNING: OpenCV was not found. ")
-  ELSE(NOT OpenCV_FOUND)
+#  if(NOT OpenCV_FOUND)
+#   MESSAGE(STATUS "WARNING: OpenCV was not found. ")
+#  else(NOT OpenCV_FOUND)
 
   ADD_EXECUTABLE(openMVG_main_computeMatches_OpenCV main_computeMatches_OpenCV.cpp)
   TARGET_LINK_LIBRARIES(openMVG_main_computeMatches_OpenCV
-                        ${OpenMVG_LIBS}
-                        ${OpenCV_LIBS})
+  ${LIBS} flann_cpp_s ${OpenCV_LIBS})
 
-  ENDIF(NOT OpenCV_FOUND)
+#  ENDIF(NOT OpenCV_FOUND)
 ENDIF(USE_OPENCV)
 
 # -
@@ -81,4 +87,4 @@ ENDIF(USE_OPENCV)
 # -
 ADD_EXECUTABLE(openMVG_main_openMVG2MESHLAB main_openMVG2MESHLAB.cpp)
 TARGET_LINK_LIBRARIES(openMVG_main_openMVG2MESHLAB
-                     ${OpenMVG_LIBS})
+                     ${LIBS})

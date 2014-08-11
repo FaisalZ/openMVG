@@ -28,14 +28,14 @@
 #include "opencv2/core/eigen.hpp" //To Convert Eigen matrix to cv matrix
 // Legacy free features
 #include "opencv2/features2d/features2d.hpp"
-// Patent protected features
-#include "opencv2/nonfree/features2d.hpp"
+//#include "opencv2/nonfree/features2d.hpp"
 
 #include <cstdlib>
 #include <iostream>
 #include <fstream>
 #include <iterator>
 #include <vector>
+#include "brisk/brisk.h"
 
 using namespace openMVG;
 using namespace openMVG::matching;
@@ -48,6 +48,9 @@ enum eGeometricModel
   ESSENTIAL_MATRIX = 1,
   HOMOGRAPHY_MATRIX = 2
 };
+
+int BRISK_octaves = 0;
+int BRISK_treshhold = 5;
 
 // Equality functor to count the number of similar K matrices in the essential matrix case.
 bool testIntrinsicsEquality(
@@ -67,12 +70,40 @@ static bool ComputeCVFeatAndDesc(const Image<unsigned char>& I,
   cv::Mat img;
   cv::eigen2cv(I.GetMat(), img);
 
-  cvFeature2DInterfaceT detectAndDescribeClass;
-
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////     Hier passiert's!      //////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  //cvFeature2DInterfaceT detectAndDescribeClass;
   std::vector< cv::KeyPoint > vec_keypoints;
   cv::Mat m_desc;
 
-  detectAndDescribeClass(img, cv::Mat(), vec_keypoints, m_desc);
+  //detectAndDescribeClass(img, cv::Mat(), vec_keypoints, m_desc);
+  //create Detector & Descriptor
+	cv::Ptr<cv::FeatureDetector> detector; // Feature Detector
+	cv::Ptr<cv::DescriptorExtractor> descriptor; // Feature Descriptor
+
+	//detector = cv::FeatureDetector::create("BRISK");
+	//detector->set("thres",5);
+	//detector->set("octaves",3);
+
+	//detector = cv::FeatureDetector::create("FAST");
+	//detector->set("nonmaxSuppression",3);
+	//detector->set("threshold",15);
+
+	detector = new cv::BriskFeatureDetector(BRISK_treshhold,BRISK_octaves);
+
+	descriptor = cv::DescriptorExtractor::create("FREAK");
+	descriptor->set("nbOctave",4);
+	descriptor->set("orientationNormalized",1);
+	descriptor->set("patternScale",20.0);
+	descriptor->set("scaleNormalized",1);
+
+	detector->detect(img,vec_keypoints);
+	descriptor->compute(img,vec_keypoints,m_desc);
+	std::cout << vec_keypoints.size() << " ";
+	std::cout << m_desc.rows << std::endl;
+
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   if (!vec_keypoints.empty())
   {
@@ -155,6 +186,8 @@ int main(int argc, char **argv)
   cmd.add( make_option('o', sOutDir, "outdir") );
   cmd.add( make_option('r', fDistRatio, "distratio") );
   cmd.add( make_option('g', sGeometricModel, "f") );
+  cmd.add( make_option('oct', BRISK_octaves, "Octaves") );
+  cmd.add( make_option('b', BRISK_treshhold, "Treshhold") );
 
   try {
       if (argc == 1) throw std::string("Invalid command line parameter.");
@@ -163,6 +196,8 @@ int main(int argc, char **argv)
       std::cerr << "Usage: " << argv[0] << '\n'
       << "[-i|--imadir path] \n"
       << "[-o|--outdir path] \n"
+	  << "[-oct|--BRISK Octaves] \n"
+	  << "[-b|--BRISK Treshhold] \n"
       << "\n[Optional]\n"
       << "[-g]--geometricModel f, e or h]"
       << std::endl;
@@ -279,15 +314,11 @@ int main(int argc, char **argv)
   //--  Note that the openCV + openMVG interface is working only for
   //     floating point descriptor.
 
-  //-- Surf opencv => default 64 floating point values
-  typedef cv::SURF cvFeature2DInterfaceT;
-  typedef Descriptor<float, 64> DescriptorT;
-  std::cout << "\nUse the opencv SURF interface" << std::endl;
-
-  //-- Sift opencv => default 128 floating point values
-  //typedef cv::SIFT cvFeature2DInterfaceT;
-  //typedef Descriptor<float, 128> DescriptorT;
-  //std::cout << "\nUse the opencv SIFT interface" << std::endl;
+  //-- Brisk opencv => default 64 char (byte) values -> 64*8=512bit
+  typedef cv::BRISK cvFeature2DInterfaceT;
+  //typedef Descriptor<std::bitset<512>, 1> DescriptorT;
+  typedef Descriptor<unsigned char, 64> DescriptorT;
+  std::cout << "\nUse the opencv BRISK & FREAK interface" << std::endl;
 
   typedef SIOPointFeature FeatureT;
   typedef std::vector<FeatureT> FeatsT;
@@ -306,11 +337,15 @@ int main(int argc, char **argv)
   //    - L2 descriptor matching
   //    - Keep correspondences only if NearestNeighbor ratio is ok
   //---------------------------------------
-  PairWiseMatches map_PutativesMatches;
+  IndexedMatchPerPair map_PutativesMatches;
   // Define the matcher and the used metric (Squared L2)
   // ANN matcher could be defined as follow:
-  typedef flann::L2<DescriptorT::bin_type> MetricT;
-  typedef ArrayMatcher_Kdtree_Flann<DescriptorT::bin_type, MetricT> MatcherT;
+  //SIFT  & SURF: //typedef flann::L2<DescriptorT::bin_type> MetricT;
+  //SIFT  & SURF: //typedef ArrayMatcher_Kdtree_Flann<DescriptorT::bin_type, MetricT> MatcherT;
+  ///BRISK & FREAK://////////////////////////////////////////////////////////////
+  typedef flann::Hamming<DescriptorT::bin_type> MetricT;
+  typedef ArrayMatcherBruteForce<DescriptorT::bin_type, MetricT> MatcherT;
+  ///////////////////////////////////////////////////////////////////////////
   // Brute force matcher can be defined as following:
   //typedef L2_Vectorized<DescriptorT::bin_type> MetricT;
   //typedef ArrayMatcherBruteForce<DescriptorT::bin_type, MetricT> MatcherT;
@@ -348,7 +383,7 @@ int main(int argc, char **argv)
   //    - AContrario Estimation of the desired geometric model
   //    - Use an upper bound for the a contrario estimated threshold
   //---------------------------------------
-  PairWiseMatches map_GeometricMatches;
+  IndexedMatchPerPair map_GeometricMatches;
 
   ImageCollectionGeometricFilter<FeatureT> collectionGeomFilter;
   const double maxResidualError = 4.0;
@@ -375,8 +410,8 @@ int main(int argc, char **argv)
           vec_imagesSize);
 
         //-- Perform an additional check to remove pairs with poor overlap
-        std::vector<PairWiseMatches::key_type> vec_toRemove;
-        for (PairWiseMatches::const_iterator iterMap = map_GeometricMatches.begin();
+        std::vector<IndexedMatchPerPair::key_type> vec_toRemove;
+        for (IndexedMatchPerPair::const_iterator iterMap = map_GeometricMatches.begin();
           iterMap != map_GeometricMatches.end(); ++iterMap)
         {
           size_t putativePhotometricCount = map_PutativesMatches.find(iterMap->first)->second.size();
@@ -388,7 +423,7 @@ int main(int argc, char **argv)
           }
         }
         //-- remove discarded pairs
-        for (std::vector<PairWiseMatches::key_type>::const_iterator
+        for (std::vector<IndexedMatchPerPair::key_type>::const_iterator
           iter =  vec_toRemove.begin(); iter != vec_toRemove.end(); ++iter)
         {
           map_GeometricMatches.erase(*iter);

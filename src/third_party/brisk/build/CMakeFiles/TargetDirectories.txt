@@ -1,0 +1,5 @@
+C:/Users/jtrottnow/Documents/libs/brisk/build/CMakeFiles/ALL_BUILD.dir
+C:/Users/jtrottnow/Documents/libs/brisk/build/CMakeFiles/ZERO_CHECK.dir
+C:/Users/jtrottnow/Documents/libs/brisk/build/thirdparty/agast/CMakeFiles/agast_static.dir
+C:/Users/jtrottnow/Documents/libs/brisk/build/CMakeFiles/brisk_static.dir
+C:/Users/jtrottnow/Documents/libs/brisk/build/CMakeFiles/demo.dir

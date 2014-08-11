@@ -1,0 +1,272 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|x64">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|x64">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGUID>{46CD6C72-9CD4-47C5-BA6C-D883578D1F62}</ProjectGUID>
+    <Keyword>Win32Proj</Keyword>
+    <Platform>x64</Platform>
+    <ProjectName>agast_static</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+    <PropertyGroup>
+      <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\jtrottnow\Documents\libs\brisk\win32\lib\Debug\</OutDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">agast_static.dir\Debug\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">agast_static</TargetName>
+      <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.lib</TargetExt>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\jtrottnow\Documents\libs\brisk\win32\lib\Release\</OutDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">agast_static.dir\Release\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">agast_static</TargetName>
+      <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.lib</TargetExt>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Users\jtrottnow\Documents\libs\brisk\win32\lib\MinSizeRel\</OutDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">agast_static.dir\MinSizeRel\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">agast_static</TargetName>
+      <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">.lib</TargetExt>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Users\jtrottnow\Documents\libs\brisk\win32\lib\RelWithDebInfo\</OutDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">agast_static.dir\RelWithDebInfo\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">agast_static</TargetName>
+      <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">.lib</TargetExt>
+    </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalOptions> -fno-strict-aliasing %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>S:\LIB\opencv-2.4.8\build\include;S:\LIB\opencv-2.4.8\build\include\opencv2;S:\LIB\opencv-2.4.8\build\include\opencv2\core;S:\LIB\opencv-2.4.8\build\include\opencv2\imgproc;S:\LIB\opencv-2.4.8\build\include\opencv2\features2d;S:\LIB\opencv-2.4.8\build\include\opencv2\flann;S:\LIB\opencv-2.4.8\build\include\opencv2\calib3d;S:\LIB\opencv-2.4.8\build\include\opencv2\objdetect;S:\LIB\opencv-2.4.8\build\include\opencv2\legacy;S:\LIB\opencv-2.4.8\build\include\opencv2\contrib;S:\LIB\opencv-2.4.8\build\include\opencv2\highgui;S:\LIB\opencv-2.4.8\build\include\opencv2\ml;S:\LIB\opencv-2.4.8\build\include\opencv2\video;S:\LIB\opencv-2.4.8\build\include\opencv2\gpu;C:\Users\jtrottnow\Documents\libs\brisk\thirdparty\agast\include\agast;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>Debug/</AssemblerListingLocation>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <WarningLevel>EnableAllWarnings</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;_REENTRANT;MX_COMPAT_32;MATLAB_MEX_FILE;CMAKE_INTDIR="Debug";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;_REENTRANT;MX_COMPAT_32;MATLAB_MEX_FILE;CMAKE_INTDIR=\"Debug\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>S:\LIB\opencv-2.4.8\build\include;S:\LIB\opencv-2.4.8\build\include\opencv2;S:\LIB\opencv-2.4.8\build\include\opencv2\core;S:\LIB\opencv-2.4.8\build\include\opencv2\imgproc;S:\LIB\opencv-2.4.8\build\include\opencv2\features2d;S:\LIB\opencv-2.4.8\build\include\opencv2\flann;S:\LIB\opencv-2.4.8\build\include\opencv2\calib3d;S:\LIB\opencv-2.4.8\build\include\opencv2\objdetect;S:\LIB\opencv-2.4.8\build\include\opencv2\legacy;S:\LIB\opencv-2.4.8\build\include\opencv2\contrib;S:\LIB\opencv-2.4.8\build\include\opencv2\highgui;S:\LIB\opencv-2.4.8\build\include\opencv2\ml;S:\LIB\opencv-2.4.8\build\include\opencv2\video;S:\LIB\opencv-2.4.8\build\include\opencv2\gpu;C:\Users\jtrottnow\Documents\libs\brisk\thirdparty\agast\include\agast;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>S:\LIB\opencv-2.4.8\build\include;S:\LIB\opencv-2.4.8\build\include\opencv2;S:\LIB\opencv-2.4.8\build\include\opencv2\core;S:\LIB\opencv-2.4.8\build\include\opencv2\imgproc;S:\LIB\opencv-2.4.8\build\include\opencv2\features2d;S:\LIB\opencv-2.4.8\build\include\opencv2\flann;S:\LIB\opencv-2.4.8\build\include\opencv2\calib3d;S:\LIB\opencv-2.4.8\build\include\opencv2\objdetect;S:\LIB\opencv-2.4.8\build\include\opencv2\legacy;S:\LIB\opencv-2.4.8\build\include\opencv2\contrib;S:\LIB\opencv-2.4.8\build\include\opencv2\highgui;S:\LIB\opencv-2.4.8\build\include\opencv2\ml;S:\LIB\opencv-2.4.8\build\include\opencv2\video;S:\LIB\opencv-2.4.8\build\include\opencv2\gpu;C:\Users\jtrottnow\Documents\libs\brisk\thirdparty\agast\include\agast;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <AdditionalOptions> -fno-strict-aliasing %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>S:\LIB\opencv-2.4.8\build\include;S:\LIB\opencv-2.4.8\build\include\opencv2;S:\LIB\opencv-2.4.8\build\include\opencv2\core;S:\LIB\opencv-2.4.8\build\include\opencv2\imgproc;S:\LIB\opencv-2.4.8\build\include\opencv2\features2d;S:\LIB\opencv-2.4.8\build\include\opencv2\flann;S:\LIB\opencv-2.4.8\build\include\opencv2\calib3d;S:\LIB\opencv-2.4.8\build\include\opencv2\objdetect;S:\LIB\opencv-2.4.8\build\include\opencv2\legacy;S:\LIB\opencv-2.4.8\build\include\opencv2\contrib;S:\LIB\opencv-2.4.8\build\include\opencv2\highgui;S:\LIB\opencv-2.4.8\build\include\opencv2\ml;S:\LIB\opencv-2.4.8\build\include\opencv2\video;S:\LIB\opencv-2.4.8\build\include\opencv2\gpu;C:\Users\jtrottnow\Documents\libs\brisk\thirdparty\agast\include\agast;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>Release/</AssemblerListingLocation>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <WarningLevel>EnableAllWarnings</WarningLevel>
+      <DebugInformationFormat></DebugInformationFormat>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_REENTRANT;MX_COMPAT_32;MATLAB_MEX_FILE;CMAKE_INTDIR="Release";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_REENTRANT;MX_COMPAT_32;MATLAB_MEX_FILE;CMAKE_INTDIR=\"Release\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>S:\LIB\opencv-2.4.8\build\include;S:\LIB\opencv-2.4.8\build\include\opencv2;S:\LIB\opencv-2.4.8\build\include\opencv2\core;S:\LIB\opencv-2.4.8\build\include\opencv2\imgproc;S:\LIB\opencv-2.4.8\build\include\opencv2\features2d;S:\LIB\opencv-2.4.8\build\include\opencv2\flann;S:\LIB\opencv-2.4.8\build\include\opencv2\calib3d;S:\LIB\opencv-2.4.8\build\include\opencv2\objdetect;S:\LIB\opencv-2.4.8\build\include\opencv2\legacy;S:\LIB\opencv-2.4.8\build\include\opencv2\contrib;S:\LIB\opencv-2.4.8\build\include\opencv2\highgui;S:\LIB\opencv-2.4.8\build\include\opencv2\ml;S:\LIB\opencv-2.4.8\build\include\opencv2\video;S:\LIB\opencv-2.4.8\build\include\opencv2\gpu;C:\Users\jtrottnow\Documents\libs\brisk\thirdparty\agast\include\agast;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>S:\LIB\opencv-2.4.8\build\include;S:\LIB\opencv-2.4.8\build\include\opencv2;S:\LIB\opencv-2.4.8\build\include\opencv2\core;S:\LIB\opencv-2.4.8\build\include\opencv2\imgproc;S:\LIB\opencv-2.4.8\build\include\opencv2\features2d;S:\LIB\opencv-2.4.8\build\include\opencv2\flann;S:\LIB\opencv-2.4.8\build\include\opencv2\calib3d;S:\LIB\opencv-2.4.8\build\include\opencv2\objdetect;S:\LIB\opencv-2.4.8\build\include\opencv2\legacy;S:\LIB\opencv-2.4.8\build\include\opencv2\contrib;S:\LIB\opencv-2.4.8\build\include\opencv2\highgui;S:\LIB\opencv-2.4.8\build\include\opencv2\ml;S:\LIB\opencv-2.4.8\build\include\opencv2\video;S:\LIB\opencv-2.4.8\build\include\opencv2\gpu;C:\Users\jtrottnow\Documents\libs\brisk\thirdparty\agast\include\agast;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
+    <ClCompile>
+      <AdditionalOptions> -fno-strict-aliasing %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>S:\LIB\opencv-2.4.8\build\include;S:\LIB\opencv-2.4.8\build\include\opencv2;S:\LIB\opencv-2.4.8\build\include\opencv2\core;S:\LIB\opencv-2.4.8\build\include\opencv2\imgproc;S:\LIB\opencv-2.4.8\build\include\opencv2\features2d;S:\LIB\opencv-2.4.8\build\include\opencv2\flann;S:\LIB\opencv-2.4.8\build\include\opencv2\calib3d;S:\LIB\opencv-2.4.8\build\include\opencv2\objdetect;S:\LIB\opencv-2.4.8\build\include\opencv2\legacy;S:\LIB\opencv-2.4.8\build\include\opencv2\contrib;S:\LIB\opencv-2.4.8\build\include\opencv2\highgui;S:\LIB\opencv-2.4.8\build\include\opencv2\ml;S:\LIB\opencv-2.4.8\build\include\opencv2\video;S:\LIB\opencv-2.4.8\build\include\opencv2\gpu;C:\Users\jtrottnow\Documents\libs\brisk\thirdparty\agast\include\agast;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>MinSizeRel/</AssemblerListingLocation>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <Optimization>MinSpace</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <WarningLevel>EnableAllWarnings</WarningLevel>
+      <DebugInformationFormat></DebugInformationFormat>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_REENTRANT;MX_COMPAT_32;MATLAB_MEX_FILE;CMAKE_INTDIR="MinSizeRel";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_REENTRANT;MX_COMPAT_32;MATLAB_MEX_FILE;CMAKE_INTDIR=\"MinSizeRel\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>S:\LIB\opencv-2.4.8\build\include;S:\LIB\opencv-2.4.8\build\include\opencv2;S:\LIB\opencv-2.4.8\build\include\opencv2\core;S:\LIB\opencv-2.4.8\build\include\opencv2\imgproc;S:\LIB\opencv-2.4.8\build\include\opencv2\features2d;S:\LIB\opencv-2.4.8\build\include\opencv2\flann;S:\LIB\opencv-2.4.8\build\include\opencv2\calib3d;S:\LIB\opencv-2.4.8\build\include\opencv2\objdetect;S:\LIB\opencv-2.4.8\build\include\opencv2\legacy;S:\LIB\opencv-2.4.8\build\include\opencv2\contrib;S:\LIB\opencv-2.4.8\build\include\opencv2\highgui;S:\LIB\opencv-2.4.8\build\include\opencv2\ml;S:\LIB\opencv-2.4.8\build\include\opencv2\video;S:\LIB\opencv-2.4.8\build\include\opencv2\gpu;C:\Users\jtrottnow\Documents\libs\brisk\thirdparty\agast\include\agast;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>S:\LIB\opencv-2.4.8\build\include;S:\LIB\opencv-2.4.8\build\include\opencv2;S:\LIB\opencv-2.4.8\build\include\opencv2\core;S:\LIB\opencv-2.4.8\build\include\opencv2\imgproc;S:\LIB\opencv-2.4.8\build\include\opencv2\features2d;S:\LIB\opencv-2.4.8\build\include\opencv2\flann;S:\LIB\opencv-2.4.8\build\include\opencv2\calib3d;S:\LIB\opencv-2.4.8\build\include\opencv2\objdetect;S:\LIB\opencv-2.4.8\build\include\opencv2\legacy;S:\LIB\opencv-2.4.8\build\include\opencv2\contrib;S:\LIB\opencv-2.4.8\build\include\opencv2\highgui;S:\LIB\opencv-2.4.8\build\include\opencv2\ml;S:\LIB\opencv-2.4.8\build\include\opencv2\video;S:\LIB\opencv-2.4.8\build\include\opencv2\gpu;C:\Users\jtrottnow\Documents\libs\brisk\thirdparty\agast\include\agast;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
+    <ClCompile>
+      <AdditionalOptions> -fno-strict-aliasing %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>S:\LIB\opencv-2.4.8\build\include;S:\LIB\opencv-2.4.8\build\include\opencv2;S:\LIB\opencv-2.4.8\build\include\opencv2\core;S:\LIB\opencv-2.4.8\build\include\opencv2\imgproc;S:\LIB\opencv-2.4.8\build\include\opencv2\features2d;S:\LIB\opencv-2.4.8\build\include\opencv2\flann;S:\LIB\opencv-2.4.8\build\include\opencv2\calib3d;S:\LIB\opencv-2.4.8\build\include\opencv2\objdetect;S:\LIB\opencv-2.4.8\build\include\opencv2\legacy;S:\LIB\opencv-2.4.8\build\include\opencv2\contrib;S:\LIB\opencv-2.4.8\build\include\opencv2\highgui;S:\LIB\opencv-2.4.8\build\include\opencv2\ml;S:\LIB\opencv-2.4.8\build\include\opencv2\video;S:\LIB\opencv-2.4.8\build\include\opencv2\gpu;C:\Users\jtrottnow\Documents\libs\brisk\thirdparty\agast\include\agast;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>RelWithDebInfo/</AssemblerListingLocation>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <WarningLevel>EnableAllWarnings</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_REENTRANT;MX_COMPAT_32;MATLAB_MEX_FILE;CMAKE_INTDIR="RelWithDebInfo";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_REENTRANT;MX_COMPAT_32;MATLAB_MEX_FILE;CMAKE_INTDIR=\"RelWithDebInfo\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>S:\LIB\opencv-2.4.8\build\include;S:\LIB\opencv-2.4.8\build\include\opencv2;S:\LIB\opencv-2.4.8\build\include\opencv2\core;S:\LIB\opencv-2.4.8\build\include\opencv2\imgproc;S:\LIB\opencv-2.4.8\build\include\opencv2\features2d;S:\LIB\opencv-2.4.8\build\include\opencv2\flann;S:\LIB\opencv-2.4.8\build\include\opencv2\calib3d;S:\LIB\opencv-2.4.8\build\include\opencv2\objdetect;S:\LIB\opencv-2.4.8\build\include\opencv2\legacy;S:\LIB\opencv-2.4.8\build\include\opencv2\contrib;S:\LIB\opencv-2.4.8\build\include\opencv2\highgui;S:\LIB\opencv-2.4.8\build\include\opencv2\ml;S:\LIB\opencv-2.4.8\build\include\opencv2\video;S:\LIB\opencv-2.4.8\build\include\opencv2\gpu;C:\Users\jtrottnow\Documents\libs\brisk\thirdparty\agast\include\agast;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>S:\LIB\opencv-2.4.8\build\include;S:\LIB\opencv-2.4.8\build\include\opencv2;S:\LIB\opencv-2.4.8\build\include\opencv2\core;S:\LIB\opencv-2.4.8\build\include\opencv2\imgproc;S:\LIB\opencv-2.4.8\build\include\opencv2\features2d;S:\LIB\opencv-2.4.8\build\include\opencv2\flann;S:\LIB\opencv-2.4.8\build\include\opencv2\calib3d;S:\LIB\opencv-2.4.8\build\include\opencv2\objdetect;S:\LIB\opencv-2.4.8\build\include\opencv2\legacy;S:\LIB\opencv-2.4.8\build\include\opencv2\contrib;S:\LIB\opencv-2.4.8\build\include\opencv2\highgui;S:\LIB\opencv-2.4.8\build\include\opencv2\ml;S:\LIB\opencv-2.4.8\build\include\opencv2\video;S:\LIB\opencv-2.4.8\build\include\opencv2\gpu;C:\Users\jtrottnow\Documents\libs\brisk\thirdparty\agast\include\agast;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\..\thirdparty\agast\CMakeLists.txt">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule C:/Users/jtrottnow/Documents/libs/brisk/thirdparty/agast/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"C:\Program Files (x86)\CMake 2.8\bin\cmake.exe" -HC:/Users/jtrottnow/Documents/libs/brisk -BC:/Users/jtrottnow/Documents/libs/brisk/build --check-stamp-file C:\Users\jtrottnow\Documents\libs\brisk\build\thirdparty\agast\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/jtrottnow/Documents/libs/brisk/thirdparty/agast/CMakeLists.txt;C:\Users\jtrottnow\Documents\libs\brisk\thirdparty\agast\CMakeLists.txt;C:\Users\jtrottnow\Documents\libs\brisk\thirdparty\agast\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\jtrottnow\Documents\libs\brisk\build\thirdparty\agast\CMakeFiles\generate.stamp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule C:/Users/jtrottnow/Documents/libs/brisk/thirdparty/agast/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"C:\Program Files (x86)\CMake 2.8\bin\cmake.exe" -HC:/Users/jtrottnow/Documents/libs/brisk -BC:/Users/jtrottnow/Documents/libs/brisk/build --check-stamp-file C:\Users\jtrottnow\Documents\libs\brisk\build\thirdparty\agast\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/jtrottnow/Documents/libs/brisk/thirdparty/agast/CMakeLists.txt;C:\Users\jtrottnow\Documents\libs\brisk\thirdparty\agast\CMakeLists.txt;C:\Users\jtrottnow\Documents\libs\brisk\thirdparty\agast\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\jtrottnow\Documents\libs\brisk\build\thirdparty\agast\CMakeFiles\generate.stamp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule C:/Users/jtrottnow/Documents/libs/brisk/thirdparty/agast/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+"C:\Program Files (x86)\CMake 2.8\bin\cmake.exe" -HC:/Users/jtrottnow/Documents/libs/brisk -BC:/Users/jtrottnow/Documents/libs/brisk/build --check-stamp-file C:\Users\jtrottnow\Documents\libs\brisk\build\thirdparty\agast\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/jtrottnow/Documents/libs/brisk/thirdparty/agast/CMakeLists.txt;C:\Users\jtrottnow\Documents\libs\brisk\thirdparty\agast\CMakeLists.txt;C:\Users\jtrottnow\Documents\libs\brisk\thirdparty\agast\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Users\jtrottnow\Documents\libs\brisk\build\thirdparty\agast\CMakeFiles\generate.stamp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule C:/Users/jtrottnow/Documents/libs/brisk/thirdparty/agast/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+"C:\Program Files (x86)\CMake 2.8\bin\cmake.exe" -HC:/Users/jtrottnow/Documents/libs/brisk -BC:/Users/jtrottnow/Documents/libs/brisk/build --check-stamp-file C:\Users\jtrottnow\Documents\libs\brisk\build\thirdparty\agast\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/jtrottnow/Documents/libs/brisk/thirdparty/agast/CMakeLists.txt;C:\Users\jtrottnow\Documents\libs\brisk\thirdparty\agast\CMakeLists.txt;C:\Users\jtrottnow\Documents\libs\brisk\thirdparty\agast\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Users\jtrottnow\Documents\libs\brisk\build\thirdparty\agast\CMakeFiles\generate.stamp</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\thirdparty\agast\include\agast\agast5_8.h" />
+    <ClInclude Include="..\..\..\thirdparty\agast\include\agast\agast7_12d.h" />
+    <ClInclude Include="..\..\..\thirdparty\agast\include\agast\agast7_12s.h" />
+    <ClInclude Include="..\..\..\thirdparty\agast\include\agast\AstDetector.h" />
+    <ClInclude Include="..\..\..\thirdparty\agast\include\agast\cvWrapper.h" />
+    <ClInclude Include="..\..\..\thirdparty\agast\include\agast\oast9_16.h" />
+    <ClCompile Include="..\..\..\thirdparty\agast\src\agast5_8.cc"  />
+    <ClCompile Include="..\..\..\thirdparty\agast\src\agast5_8_nms.cc"  />
+    <ClCompile Include="..\..\..\thirdparty\agast\src\agast7_12d.cc"  />
+    <ClCompile Include="..\..\..\thirdparty\agast\src\agast7_12d_nms.cc"  />
+    <ClCompile Include="..\..\..\thirdparty\agast\src\agast7_12s.cc"  />
+    <ClCompile Include="..\..\..\thirdparty\agast\src\agast7_12s_nms.cc"  />
+    <ClCompile Include="..\..\..\thirdparty\agast\src\AstDetector.cc"  />
+    <ClCompile Include="..\..\..\thirdparty\agast\src\nonMaximumSuppression.cc"  />
+    <ClCompile Include="..\..\..\thirdparty\agast\src\oast9_16.cc"  />
+    <ClCompile Include="..\..\..\thirdparty\agast\src\oast9_16_nms.cc"  />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="C:/Users/jtrottnow/Documents/libs/brisk/build/ZERO_CHECK.vcxproj">
+      <Project>0A22054D-585F-486F-86C4-B49DB21DA296</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
