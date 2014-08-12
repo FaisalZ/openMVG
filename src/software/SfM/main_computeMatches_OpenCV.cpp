@@ -28,7 +28,7 @@
 #include "opencv2/core/eigen.hpp" //To Convert Eigen matrix to cv matrix
 // Legacy free features
 #include "opencv2/features2d/features2d.hpp"
-//#include "opencv2/nonfree/features2d.hpp"
+
 
 #include <cstdlib>
 #include <iostream>
@@ -70,9 +70,6 @@ static bool ComputeCVFeatAndDesc(const Image<unsigned char>& I,
   cv::Mat img;
   cv::eigen2cv(I.GetMat(), img);
 
-  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  //////////////////////////////////////     Hier passiert's!      //////////////////////////////////////////////////
-  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   //cvFeature2DInterfaceT detectAndDescribeClass;
   std::vector< cv::KeyPoint > vec_keypoints;
   cv::Mat m_desc;
@@ -102,8 +99,6 @@ static bool ComputeCVFeatAndDesc(const Image<unsigned char>& I,
 	descriptor->compute(img,vec_keypoints,m_desc);
 	std::cout << vec_keypoints.size() << " ";
 	std::cout << m_desc.rows << std::endl;
-
-  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   if (!vec_keypoints.empty())
   {
@@ -337,15 +332,11 @@ int main(int argc, char **argv)
   //    - L2 descriptor matching
   //    - Keep correspondences only if NearestNeighbor ratio is ok
   //---------------------------------------
-  IndexedMatchPerPair map_PutativesMatches;
+  PairWiseMatches map_PutativesMatches;
   // Define the matcher and the used metric (Squared L2)
   // ANN matcher could be defined as follow:
-  //SIFT  & SURF: //typedef flann::L2<DescriptorT::bin_type> MetricT;
-  //SIFT  & SURF: //typedef ArrayMatcher_Kdtree_Flann<DescriptorT::bin_type, MetricT> MatcherT;
-  ///BRISK & FREAK://////////////////////////////////////////////////////////////
   typedef flann::Hamming<DescriptorT::bin_type> MetricT;
   typedef ArrayMatcherBruteForce<DescriptorT::bin_type, MetricT> MatcherT;
-  ///////////////////////////////////////////////////////////////////////////
   // Brute force matcher can be defined as following:
   //typedef L2_Vectorized<DescriptorT::bin_type> MetricT;
   //typedef ArrayMatcherBruteForce<DescriptorT::bin_type, MetricT> MatcherT;
@@ -383,7 +374,7 @@ int main(int argc, char **argv)
   //    - AContrario Estimation of the desired geometric model
   //    - Use an upper bound for the a contrario estimated threshold
   //---------------------------------------
-  IndexedMatchPerPair map_GeometricMatches;
+  PairWiseMatches map_GeometricMatches;
 
   ImageCollectionGeometricFilter<FeatureT> collectionGeomFilter;
   const double maxResidualError = 4.0;
@@ -410,8 +401,8 @@ int main(int argc, char **argv)
           vec_imagesSize);
 
         //-- Perform an additional check to remove pairs with poor overlap
-        std::vector<IndexedMatchPerPair::key_type> vec_toRemove;
-        for (IndexedMatchPerPair::const_iterator iterMap = map_GeometricMatches.begin();
+        std::vector<PairWiseMatches::key_type> vec_toRemove;
+        for (PairWiseMatches::const_iterator iterMap = map_GeometricMatches.begin();
           iterMap != map_GeometricMatches.end(); ++iterMap)
         {
           size_t putativePhotometricCount = map_PutativesMatches.find(iterMap->first)->second.size();
@@ -423,7 +414,7 @@ int main(int argc, char **argv)
           }
         }
         //-- remove discarded pairs
-        for (std::vector<IndexedMatchPerPair::key_type>::const_iterator
+        for (std::vector<PairWiseMatches::key_type>::const_iterator
           iter =  vec_toRemove.begin(); iter != vec_toRemove.end(); ++iter)
         {
           map_GeometricMatches.erase(*iter);
