@@ -29,9 +29,6 @@
 // Author: sameeragarwal@google.com (Sameer Agarwal)
 
 #include "ceres/lapack.h"
-
-#include "ceres/internal/port.h"
-#include "ceres/linear_solver.h"
 #include "glog/logging.h"
 
 // C interface to the LAPACK Cholesky factorization and triangular solve.
@@ -66,14 +63,12 @@ extern "C" void dgels_(char* uplo,
 namespace ceres {
 namespace internal {
 
-LinearSolverTerminationType LAPACK::SolveInPlaceUsingCholesky(
-    int num_rows,
-    const double* in_lhs,
-    double* rhs_and_solution,
-    string* message) {
+int LAPACK::SolveInPlaceUsingCholesky(int num_rows,
+                                      const double* in_lhs,
+                                      double* rhs_and_solution) {
 #ifdef CERES_NO_LAPACK
   LOG(FATAL) << "Ceres was built without a BLAS library.";
-  return LINEAR_SOLVER_FATAL_ERROR;
+  return -1;
 #else
   char uplo = 'L';
   int n = num_rows;
@@ -82,33 +77,17 @@ LinearSolverTerminationType LAPACK::SolveInPlaceUsingCholesky(
   double* lhs = const_cast<double*>(in_lhs);
 
   dpotrf_(&uplo, &n, lhs, &n, &info);
-  if (info < 0) {
-    LOG(FATAL) << "Congratulations, you found a bug in Ceres."
-               << "Please report it."
-               << "LAPACK::dpotrf fatal error."
-               << "Argument: " << -info << " is invalid.";
-    return LINEAR_SOLVER_FATAL_ERROR;
-  }
-
-  if (info > 0) {
-    *message =
-        StringPrintf(
-            "LAPACK::dpotrf numerical failure. "
-             "The leading minor of order %d is not positive definite.", info);
-    return LINEAR_SOLVER_FAILURE;
+  if (info != 0) {
+    LOG(INFO) << "Cholesky factorization (dpotrf) failed: " << info;
+    return info;
   }
 
   dpotrs_(&uplo, &n, &nrhs, lhs, &n, rhs_and_solution, &n, &info);
-  if (info < 0) {
-    LOG(FATAL) << "Congratulations, you found a bug in Ceres."
-               << "Please report it."
-               << "LAPACK::dpotrs fatal error."
-               << "Argument: " << -info << " is invalid.";
-    return LINEAR_SOLVER_FATAL_ERROR;
+  if (info != 0) {
+    LOG(INFO) << "Triangular solve (dpotrs) failed: " << info;
   }
 
-  *message = "Success";
-  return LINEAR_SOLVER_SUCCESS;
+  return info;
 #endif
 };
 
@@ -134,27 +113,20 @@ int LAPACK::EstimateWorkSizeForQR(int num_rows, int num_cols) {
          &lwork,
          &info);
 
-  if (info < 0) {
-    LOG(FATAL) << "Congratulations, you found a bug in Ceres."
-               << "Please report it."
-               << "LAPACK::dgels fatal error."
-               << "Argument: " << -info << " is invalid.";
-  }
+  CHECK_EQ(info, 0);
   return static_cast<int>(work);
 #endif
 }
 
-LinearSolverTerminationType LAPACK::SolveInPlaceUsingQR(
-    int num_rows,
-    int num_cols,
-    const double* in_lhs,
-    int work_size,
-    double* work,
-    double* rhs_and_solution,
-    string* message) {
+int LAPACK::SolveUsingQR(int num_rows,
+                         int num_cols,
+                         const double* in_lhs,
+                         int work_size,
+                         double* work,
+                         double* rhs_and_solution) {
 #ifdef CERES_NO_LAPACK
   LOG(FATAL) << "Ceres was built without a LAPACK library.";
-  return LINEAR_SOLVER_FATAL_ERROR;
+  return -1;
 #else
   char trans = 'N';
   int m = num_rows;
@@ -177,15 +149,7 @@ LinearSolverTerminationType LAPACK::SolveInPlaceUsingQR(
          &work_size,
          &info);
 
-  if (info < 0) {
-    LOG(FATAL) << "Congratulations, you found a bug in Ceres."
-               << "Please report it."
-               << "LAPACK::dgels fatal error."
-               << "Argument: " << -info << " is invalid.";
-  }
-
-  *message = "Success.";
-  return LINEAR_SOLVER_SUCCESS;
+  return info;
 #endif
 }
 

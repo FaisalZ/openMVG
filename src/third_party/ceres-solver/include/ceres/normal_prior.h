@@ -36,7 +36,6 @@
 
 #include "ceres/cost_function.h"
 #include "ceres/internal/eigen.h"
-#include "ceres/internal/disable_warnings.h"
 
 namespace ceres {
 
@@ -57,7 +56,7 @@ namespace ceres {
 // which would be the case if the covariance matrix S is rank
 // deficient.
 
-class CERES_EXPORT NormalPrior: public CostFunction {
+class NormalPrior: public CostFunction {
  public:
   // Check that the number of rows in the vector b are the same as the
   // number of columns in the matrix A, crash otherwise.
@@ -72,7 +71,5 @@ class CERES_EXPORT NormalPrior: public CostFunction {
 };
 
 }  // namespace ceres
-
-#include "ceres/internal/reenable_warnings.h"
 
 #endif  // CERES_PUBLIC_NORMAL_PRIOR_H_

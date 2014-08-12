@@ -40,6 +40,7 @@ namespace internal {
 
 Corrector::Corrector(const double sq_norm, const double rho[3]) {
   CHECK_GE(sq_norm, 0.0);
+  CHECK_GT(rho[1], 0.0);
   sqrt_rho1_ = sqrt(rho[1]);
 
   // If sq_norm = 0.0, the correction becomes trivial, the residual
@@ -84,14 +85,6 @@ Corrector::Corrector(const double sq_norm, const double rho[3]) {
     return;
   }
 
-  // We now require that the first derivative of the loss function be
-  // positive only if the second derivative is positive. This is
-  // because when the second derivative is non-positive, we do not use
-  // the second order correction suggested by BANS and instead use a
-  // simpler first order strategy which does not use a division by the
-  // gradient of the loss function.
-  CHECK_GT(rho[1], 0.0);
-
   // Calculate the smaller of the two solutions to the equation
   //
   // 0.5 *  alpha^2 - alpha - rho'' / rho' *  z'z = 0.
@@ -125,7 +118,7 @@ void Corrector::CorrectJacobian(const int num_rows,
   // The common case (rho[2] <= 0).
   if (alpha_sq_norm_ == 0.0) {
     VectorRef(jacobian, num_rows * num_cols) *= sqrt_rho1_;
-    return;
+   return;
   }
 
   // Equation 11 in BANS.

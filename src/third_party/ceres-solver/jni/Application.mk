@@ -33,7 +33,6 @@ APP_CPPFLAGS += -fno-exceptions
 APP_CPPFLAGS += -fno-rtti
 APP_OPTIM := release
 
-# Use libc++ from LLVM. It is a modern BSD licensed implementation of
-# the standard C++ library.
-APP_STL := c++_static
+# Don't use GNU libstdc++; instead use STLPort, which is free of GPL3 issues.
+APP_STL := stlport_static
 APP_ABI := armeabi-v7a

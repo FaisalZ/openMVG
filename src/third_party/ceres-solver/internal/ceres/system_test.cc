@@ -63,10 +63,9 @@ const bool kUserOrdering = false;
 
 // Struct used for configuring the solver.
 struct SolverConfig {
-  SolverConfig(
-      LinearSolverType linear_solver_type,
-      SparseLinearAlgebraLibraryType sparse_linear_algebra_library_type,
-      bool use_automatic_ordering)
+  SolverConfig(LinearSolverType linear_solver_type,
+               SparseLinearAlgebraLibraryType sparse_linear_algebra_library_type,
+               bool use_automatic_ordering)
       : linear_solver_type(linear_solver_type),
         sparse_linear_algebra_library_type(sparse_linear_algebra_library_type),
         use_automatic_ordering(use_automatic_ordering),
@@ -74,11 +73,10 @@ struct SolverConfig {
         num_threads(1) {
   }
 
-  SolverConfig(
-      LinearSolverType linear_solver_type,
-      SparseLinearAlgebraLibraryType sparse_linear_algebra_library_type,
-      bool use_automatic_ordering,
-      PreconditionerType preconditioner_type)
+  SolverConfig(LinearSolverType linear_solver_type,
+               SparseLinearAlgebraLibraryType sparse_linear_algebra_library_type,
+               bool use_automatic_ordering,
+               PreconditionerType preconditioner_type)
       : linear_solver_type(linear_solver_type),
         sparse_linear_algebra_library_type(sparse_linear_algebra_library_type),
         use_automatic_ordering(use_automatic_ordering),
@@ -90,8 +88,7 @@ struct SolverConfig {
     return StringPrintf(
         "(%s, %s, %s, %s, %d)",
         LinearSolverTypeToString(linear_solver_type),
-        SparseLinearAlgebraLibraryTypeToString(
-            sparse_linear_algebra_library_type),
+        SparseLinearAlgebraLibraryTypeToString(sparse_linear_algebra_library_type),
         use_automatic_ordering ? "AUTOMATIC" : "USER",
         PreconditionerTypeToString(preconditioner_type),
         num_threads);
@@ -140,7 +137,8 @@ void RunSolversAndCheckTheyMatch(const vector<SolverConfig>& configurations,
     options.num_linear_solver_threads = config.num_threads;
 
     if (config.use_automatic_ordering) {
-      options.linear_solver_ordering.reset();
+      delete options.linear_solver_ordering;
+      options.linear_solver_ordering = NULL;
     }
 
     LOG(INFO) << "Running solver configuration: "
@@ -159,7 +157,7 @@ void RunSolversAndCheckTheyMatch(const vector<SolverConfig>& configurations,
                    NULL,
                    NULL);
 
-    CHECK_NE(summary.termination_type, ceres::FAILURE)
+    CHECK_NE(summary.termination_type, ceres::NUMERICAL_FAILURE)
         << "Solver configuration " << i << " failed.";
     problems.push_back(system_test_problem);
 
@@ -397,7 +395,7 @@ class BundleAdjustmentProblem {
       problem_.AddResidualBlock(cost_function, NULL, camera, point);
     }
 
-    options_.linear_solver_ordering.reset(new ParameterBlockOrdering);
+    options_.linear_solver_ordering = new ParameterBlockOrdering;
 
     // The points come before the cameras.
     for (int i = 0; i < num_points_; ++i) {

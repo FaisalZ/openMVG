@@ -55,7 +55,6 @@
 #include "ceres/graph.h"
 #include "ceres/internal/macros.h"
 #include "ceres/internal/scoped_ptr.h"
-#include "ceres/linear_solver.h"
 #include "ceres/preconditioner.h"
 #include "ceres/suitesparse.h"
 
@@ -148,7 +147,7 @@ class VisibilityBasedPreconditioner : public BlockSparseMatrixPreconditioner {
   void ComputeClusterTridiagonalSparsity(const CompressedRowBlockStructure& bs);
   void InitStorage(const CompressedRowBlockStructure& bs);
   void InitEliminator(const CompressedRowBlockStructure& bs);
-  LinearSolverTerminationType Factorize();
+  bool Factorize();
   void ScaleOffDiagonalCells();
 
   void ClusterCameras(const vector< set<int> >& visibility);

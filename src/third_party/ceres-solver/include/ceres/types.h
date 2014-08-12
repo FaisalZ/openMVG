@@ -40,12 +40,12 @@
 #include <string>
 
 #include "ceres/internal/port.h"
-#include "ceres/internal/disable_warnings.h"
 
 namespace ceres {
 
 // Basic integer types. These typedefs are in the Ceres namespace to avoid
 // conflicts with other packages having similar typedefs.
+typedef short int16;
 typedef int   int32;
 
 // Argument type used in interfaces that can optionally take ownership
@@ -157,6 +157,26 @@ enum SparseLinearAlgebraLibraryType {
 enum DenseLinearAlgebraLibraryType {
   EIGEN,
   LAPACK
+};
+
+enum LinearSolverTerminationType {
+  // Termination criterion was met. For factorization based solvers
+  // the tolerance is assumed to be zero. Any user provided values are
+  // ignored.
+  TOLERANCE,
+
+  // Solver ran for max_num_iterations and terminated before the
+  // termination tolerance could be satified.
+  MAX_ITERATIONS,
+
+  // Solver is stuck and further iterations will not result in any
+  // measurable progress.
+  STAGNATION,
+
+  // Solver failed. Solver was terminated due to numerical errors. The
+  // exact cause of failure depends on the particular solver being
+  // used.
+  FAILURE
 };
 
 // Logging options
@@ -301,42 +321,41 @@ enum DoglegType {
   SUBSPACE_DOGLEG
 };
 
-enum TerminationType {
-  // Minimizer terminated because one of the convergence criterion set
-  // by the user was satisfied.
-  //
-  // 1.  (new_cost - old_cost) < function_tolerance * old_cost;
-  // 2.  max_i |gradient_i| < gradient_tolerance
-  // 3.  |step|_2 <= parameter_tolerance * ( |x|_2 +  parameter_tolerance)
-  //
-  // The user's parameter blocks will be updated with the solution.
-  CONVERGENCE,
+enum SolverTerminationType {
+  // The minimizer did not run at all; usually due to errors in the user's
+  // Problem or the solver options.
+  DID_NOT_RUN,
 
-  // The solver ran for maximum number of iterations or maximum amount
-  // of time specified by the user, but none of the convergence
-  // criterion specified by the user were met. The user's parameter
-  // blocks will be updated with the solution found so far.
+  // The solver ran for maximum number of iterations specified by the
+  // user, but none of the convergence criterion specified by the user
+  // were met.
   NO_CONVERGENCE,
 
-  // The minimizer terminated because of an error.  The user's
-  // parameter blocks will not be updated.
-  FAILURE,
+  // Minimizer terminated because
+  //  (new_cost - old_cost) < function_tolerance * old_cost;
+  FUNCTION_TOLERANCE,
+
+  // Minimizer terminated because
+  // max_i |gradient_i| < gradient_tolerance * max_i|initial_gradient_i|
+  GRADIENT_TOLERANCE,
+
+  // Minimized terminated because
+  //  |step|_2 <= parameter_tolerance * ( |x|_2 +  parameter_tolerance)
+  PARAMETER_TOLERANCE,
+
+  // The minimizer terminated because it encountered a numerical error
+  // that it could not recover from.
+  NUMERICAL_FAILURE,
 
   // Using an IterationCallback object, user code can control the
   // minimizer. The following enums indicate that the user code was
   // responsible for termination.
-  //
-  // Minimizer terminated successfully because a user
-  // IterationCallback returned SOLVER_TERMINATE_SUCCESSFULLY.
-  //
-  // The user's parameter blocks will be updated with the solution.
-  USER_SUCCESS,
 
-  // Minimizer terminated because because a user IterationCallback
-  // returned SOLVER_ABORT.
-  //
-  // The user's parameter blocks will not be updated.
-  USER_FAILURE
+  // User's IterationCallback returned SOLVER_ABORT.
+  USER_ABORT,
+
+  // User's IterationCallback returned SOLVER_TERMINATE_SUCCESSFULLY
+  USER_SUCCESS
 };
 
 // Enums used by the IterationCallback instances to indicate to the
@@ -379,9 +398,9 @@ enum DumpFormatType {
   TEXTFILE
 };
 
-// For SizedCostFunction and AutoDiffCostFunction, DYNAMIC can be
-// specified for the number of residuals. If specified, then the
-// number of residuas for that cost function can vary at runtime.
+// For SizedCostFunction and AutoDiffCostFunction, DYNAMIC can be specified for
+// the number of residuals. If specified, then the number of residuas for that
+// cost function can vary at runtime.
 enum DimensionType {
   DYNAMIC = -1
 };
@@ -403,79 +422,74 @@ enum CovarianceAlgorithmType {
   SPARSE_QR
 };
 
-CERES_EXPORT const char* LinearSolverTypeToString(
-    LinearSolverType type);
-CERES_EXPORT bool StringToLinearSolverType(string value,
-                                           LinearSolverType* type);
+const char* LinearSolverTypeToString(LinearSolverType type);
+bool StringToLinearSolverType(string value, LinearSolverType* type);
 
-CERES_EXPORT const char* PreconditionerTypeToString(PreconditionerType type);
-CERES_EXPORT bool StringToPreconditionerType(string value,
-                                             PreconditionerType* type);
+const char* PreconditionerTypeToString(PreconditionerType type);
+bool StringToPreconditionerType(string value, PreconditionerType* type);
 
-CERES_EXPORT const char* VisibilityClusteringTypeToString(
-    VisibilityClusteringType type);
-CERES_EXPORT bool StringToVisibilityClusteringType(string value,
+const char* VisibilityClusteringTypeToString(VisibilityClusteringType type);
+bool StringToVisibilityClusteringType(string value,
                                       VisibilityClusteringType* type);
 
-CERES_EXPORT const char* SparseLinearAlgebraLibraryTypeToString(
+const char* SparseLinearAlgebraLibraryTypeToString(
     SparseLinearAlgebraLibraryType type);
-CERES_EXPORT bool StringToSparseLinearAlgebraLibraryType(
+bool StringToSparseLinearAlgebraLibraryType(
     string value,
     SparseLinearAlgebraLibraryType* type);
 
-CERES_EXPORT const char* DenseLinearAlgebraLibraryTypeToString(
+const char* DenseLinearAlgebraLibraryTypeToString(
     DenseLinearAlgebraLibraryType type);
-CERES_EXPORT bool StringToDenseLinearAlgebraLibraryType(
+bool StringToDenseLinearAlgebraLibraryType(
     string value,
     DenseLinearAlgebraLibraryType* type);
 
-CERES_EXPORT const char* TrustRegionStrategyTypeToString(
-    TrustRegionStrategyType type);
-CERES_EXPORT bool StringToTrustRegionStrategyType(string value,
+const char* TrustRegionStrategyTypeToString(TrustRegionStrategyType type);
+bool StringToTrustRegionStrategyType(string value,
                                      TrustRegionStrategyType* type);
 
-CERES_EXPORT const char* DoglegTypeToString(DoglegType type);
-CERES_EXPORT bool StringToDoglegType(string value, DoglegType* type);
+const char* DoglegTypeToString(DoglegType type);
+bool StringToDoglegType(string value, DoglegType* type);
 
-CERES_EXPORT const char* MinimizerTypeToString(MinimizerType type);
-CERES_EXPORT bool StringToMinimizerType(string value, MinimizerType* type);
+const char* MinimizerTypeToString(MinimizerType type);
+bool StringToMinimizerType(string value, MinimizerType* type);
 
-CERES_EXPORT const char* LineSearchDirectionTypeToString(
-    LineSearchDirectionType type);
-CERES_EXPORT bool StringToLineSearchDirectionType(string value,
+const char* LineSearchDirectionTypeToString(LineSearchDirectionType type);
+bool StringToLineSearchDirectionType(string value,
                                      LineSearchDirectionType* type);
 
-CERES_EXPORT const char* LineSearchTypeToString(LineSearchType type);
-CERES_EXPORT bool StringToLineSearchType(string value, LineSearchType* type);
+const char* LineSearchTypeToString(LineSearchType type);
+bool StringToLineSearchType(string value, LineSearchType* type);
 
-CERES_EXPORT const char* NonlinearConjugateGradientTypeToString(
+const char* NonlinearConjugateGradientTypeToString(
     NonlinearConjugateGradientType type);
-CERES_EXPORT bool StringToNonlinearConjugateGradientType(
+bool StringToNonlinearConjugateGradientType(
     string value,
     NonlinearConjugateGradientType* type);
 
-CERES_EXPORT const char* LineSearchInterpolationTypeToString(
+const char* LineSearchInterpolationTypeToString(
     LineSearchInterpolationType type);
-CERES_EXPORT bool StringToLineSearchInterpolationType(
+bool StringToLineSearchInterpolationType(
     string value,
     LineSearchInterpolationType* type);
 
-CERES_EXPORT const char* CovarianceAlgorithmTypeToString(
+const char* CovarianceAlgorithmTypeToString(
     CovarianceAlgorithmType type);
-CERES_EXPORT bool StringToCovarianceAlgorithmType(
+bool StringToCovarianceAlgorithmType(
     string value,
     CovarianceAlgorithmType* type);
 
-CERES_EXPORT const char* TerminationTypeToString(TerminationType type);
+const char* LinearSolverTerminationTypeToString(
+    LinearSolverTerminationType type);
 
-CERES_EXPORT bool IsSchurType(LinearSolverType type);
-CERES_EXPORT bool IsSparseLinearAlgebraLibraryTypeAvailable(
+const char* SolverTerminationTypeToString(SolverTerminationType type);
+
+bool IsSchurType(LinearSolverType type);
+bool IsSparseLinearAlgebraLibraryTypeAvailable(
     SparseLinearAlgebraLibraryType type);
-CERES_EXPORT bool IsDenseLinearAlgebraLibraryTypeAvailable(
+bool IsDenseLinearAlgebraLibraryTypeAvailable(
     DenseLinearAlgebraLibraryType type);
 
 }  // namespace ceres
-
-#include "ceres/internal/reenable_warnings.h"
 
 #endif  // CERES_PUBLIC_TYPES_H_

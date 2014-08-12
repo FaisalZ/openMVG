@@ -28,9 +28,6 @@
 //
 // Author: sameeragarwal@google.com (Sameer Agarwal)
 
-// This include must come before any #ifndef check on Ceres compile options.
-#include "ceres/internal/port.h"
-
 #ifndef CERES_NO_SUITESPARSE
 
 #include "ceres/visibility_based_preconditioner.h"
@@ -371,18 +368,14 @@ bool VisibilityBasedPreconditioner::UpdateImpl(const BlockSparseMatrix& A,
   //
   // Doing the factorization like this saves us matrix mass when
   // scaling is not needed, which is quite often in our experience.
-  LinearSolverTerminationType status = Factorize();
-
-  if (status == LINEAR_SOLVER_FATAL_ERROR) {
-    return false;
-  }
+  bool status = Factorize();
 
   // The scaling only affects the tri-diagonal case, since
   // ScaleOffDiagonalBlocks only pays attenion to the cells that
   // belong to the edges of the degree-2 forest. In the CLUSTER_JACOBI
   // case, the preconditioner is guaranteed to be positive
   // semidefinite.
-  if (status == LINEAR_SOLVER_FAILURE && options_.type == CLUSTER_TRIDIAGONAL) {
+  if (!status && options_.type == CLUSTER_TRIDIAGONAL) {
     VLOG(1) << "Unscaled factorization failed. Retrying with off-diagonal "
             << "scaling";
     ScaleOffDiagonalCells();
@@ -390,7 +383,7 @@ bool VisibilityBasedPreconditioner::UpdateImpl(const BlockSparseMatrix& A,
   }
 
   VLOG(2) << "Compute time: " << time(NULL) - start_time;
-  return (status == LINEAR_SOLVER_SUCCESS);
+  return status;
 }
 
 // Consider the preconditioner matrix as meta-block matrix, whose
@@ -427,7 +420,7 @@ void VisibilityBasedPreconditioner::ScaleOffDiagonalCells() {
 
 // Compute the sparse Cholesky factorization of the preconditioner
 // matrix.
-LinearSolverTerminationType VisibilityBasedPreconditioner::Factorize() {
+bool VisibilityBasedPreconditioner::Factorize() {
   // Extract the TripletSparseMatrix that is used for actually storing
   // S and convert it into a cholmod_sparse object.
   cholmod_sparse* lhs = ss_.CreateSparseMatrix(
@@ -438,21 +431,14 @@ LinearSolverTerminationType VisibilityBasedPreconditioner::Factorize() {
   // matrix contains the values.
   lhs->stype = 1;
 
-  // TODO(sameeragarwal): Refactor to pipe this up and out.
-  string status;
-
   // Symbolic factorization is computed if we don't already have one handy.
   if (factor_ == NULL) {
-    factor_ = ss_.BlockAnalyzeCholesky(lhs, block_size_, block_size_, &status);
+    factor_ = ss_.BlockAnalyzeCholesky(lhs, block_size_, block_size_);
   }
 
-  const LinearSolverTerminationType termination_type =
-      (factor_ != NULL)
-      ? ss_.Cholesky(lhs, factor_, &status)
-      : LINEAR_SOLVER_FATAL_ERROR;
-
+  bool status = ss_.Cholesky(lhs, factor_);
   ss_.Free(lhs);
-  return termination_type;
+  return status;
 }
 
 void VisibilityBasedPreconditioner::RightMultiply(const double* x,
@@ -463,10 +449,7 @@ void VisibilityBasedPreconditioner::RightMultiply(const double* x,
 
   const int num_rows = m_->num_rows();
   memcpy(CHECK_NOTNULL(tmp_rhs_)->x, x, m_->num_rows() * sizeof(*x));
-  // TODO(sameeragarwal): Better error handling.
-  string status;
-  cholmod_dense* solution =
-      CHECK_NOTNULL(ss->Solve(factor_, tmp_rhs_, &status));
+  cholmod_dense* solution = CHECK_NOTNULL(ss->Solve(factor_, tmp_rhs_));
   memcpy(y, solution->x, sizeof(*y) * num_rows);
   ss->Free(solution);
 }

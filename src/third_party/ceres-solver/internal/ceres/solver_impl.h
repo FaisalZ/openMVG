@@ -67,8 +67,10 @@ class SolverImpl {
       CoordinateDescentMinimizer* inner_iteration_minimizer,
       Evaluator* evaluator,
       LinearSolver* linear_solver,
+      double* parameters,
       Solver::Summary* summary);
 
+#ifndef CERES_NO_LINE_SEARCH_MINIMIZER
   static void LineSearchSolve(const Solver::Options& options,
                               ProblemImpl* problem_impl,
                               Solver::Summary* summary);
@@ -77,7 +79,9 @@ class SolverImpl {
   static void LineSearchMinimize(const Solver::Options &options,
                                  Program* program,
                                  Evaluator* evaluator,
+                                 double* parameters,
                                  Solver::Summary* summary);
+#endif  // CERES_NO_LINE_SEARCH_MINIMIZER
 
   // Create the transformed Program, which has all the fixed blocks
   // and residuals eliminated, and in the case of automatic schur
@@ -89,7 +93,7 @@ class SolverImpl {
   static Program* CreateReducedProgram(Solver::Options* options,
                                        ProblemImpl* problem_impl,
                                        double* fixed_cost,
-                                       string* message);
+                                       string* error);
 
   // Create the appropriate linear solver, taking into account any
   // config changes decided by CreateTransformedProgram(). The
@@ -97,7 +101,7 @@ class SolverImpl {
   // selected; consider the case that the remaining elimininated
   // blocks is zero after removing fixed blocks.
   static LinearSolver* CreateLinearSolver(Solver::Options* options,
-                                          string* message);
+                                          string* error);
 
   // Reorder the residuals for program, if necessary, so that the
   // residuals involving e block (i.e., the first num_eliminate_block
@@ -106,38 +110,29 @@ class SolverImpl {
   static bool LexicographicallyOrderResidualBlocks(
       const int num_eliminate_blocks,
       Program* program,
-      string* message);
+      string* error);
 
   // Create the appropriate evaluator for the transformed program.
   static Evaluator* CreateEvaluator(
       const Solver::Options& options,
       const ProblemImpl::ParameterMap& parameter_map,
       Program* program,
-      string* message);
+      string* error);
 
   // Remove the fixed or unused parameter blocks and residuals
-  // depending only on fixed parameters from the program.
-  //
-  // If either linear_solver_ordering or inner_iteration_ordering are
-  // not NULL, the constant parameter blocks are removed from them
-  // too.
-  //
-  // If fixed_cost is not NULL, the residual blocks that are removed
-  // are evaluated and the sum of their cost is returned in
-  // fixed_cost.
-  //
-  // If a failure is encountered, the function returns false with a
-  // description of the failure in message.
-  static bool RemoveFixedBlocksFromProgram(
-      Program* program,
-      ParameterBlockOrdering* linear_solver_ordering,
-      ParameterBlockOrdering* inner_iteration_ordering,
-      double* fixed_cost,
-      string* message);
+  // depending only on fixed parameters from the problem. Also updates
+  // num_eliminate_blocks, since removed parameters changes the point
+  // at which the eliminated blocks is valid.  If fixed_cost is not
+  // NULL, the residual blocks that are removed are evaluated and the
+  // sum of their cost is returned in fixed_cost.
+  static bool RemoveFixedBlocksFromProgram(Program* program,
+                                           ParameterBlockOrdering* ordering,
+                                           double* fixed_cost,
+                                           string* error);
 
   static bool IsOrderingValid(const Solver::Options& options,
                               const ProblemImpl* problem_impl,
-                              string* message);
+                              string* error);
 
   static bool IsParameterBlockSetIndependent(
       const set<double*>& parameter_block_ptrs,
@@ -172,7 +167,7 @@ class SolverImpl {
       const ProblemImpl::ParameterMap& parameter_map,
       const ParameterBlockOrdering* parameter_block_ordering,
       Program* program,
-      string* message);
+      string* error);
 
   // Sparse cholesky factorization routines when doing the sparse
   // cholesky factorization of the Jacobian matrix, reorders its
@@ -188,7 +183,7 @@ class SolverImpl {
       const SparseLinearAlgebraLibraryType sparse_linear_algebra_library_type,
       const ParameterBlockOrdering* parameter_block_ordering,
       Program* program,
-      string* message);
+      string* error);
 
   // Schur type solvers require that all parameter blocks eliminated
   // by the Schur eliminator occur before others and the residuals be
@@ -212,7 +207,7 @@ class SolverImpl {
       const ProblemImpl::ParameterMap& parameter_map,
       ParameterBlockOrdering* parameter_block_ordering,
       Program* program,
-      string* message);
+      string* error);
 
   // array contains a list of (possibly repeating) non-negative
   // integers. Let us assume that we have constructed another array

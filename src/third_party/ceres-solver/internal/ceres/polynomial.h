@@ -95,7 +95,6 @@ struct FunctionSample {
         gradient(0.0),
         gradient_is_valid(false) {
   }
-  string ToDebugString() const;
 
   double x;
   double value;      // value = f(x)

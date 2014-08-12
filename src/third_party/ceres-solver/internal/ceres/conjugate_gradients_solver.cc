@@ -44,7 +44,6 @@
 #include "ceres/fpclassify.h"
 #include "ceres/internal/eigen.h"
 #include "ceres/linear_operator.h"
-#include "ceres/stringprintf.h"
 #include "ceres/types.h"
 #include "glog/logging.h"
 
@@ -74,19 +73,17 @@ LinearSolver::Summary ConjugateGradientsSolver::Solve(
   CHECK_EQ(A->num_rows(), A->num_cols());
 
   LinearSolver::Summary summary;
-  summary.termination_type = LINEAR_SOLVER_NO_CONVERGENCE;
-  summary.message = "Maximum number of iterations reached.";
+  summary.termination_type = MAX_ITERATIONS;
   summary.num_iterations = 0;
 
-  const int num_cols = A->num_cols();
+  int num_cols = A->num_cols();
   VectorRef xref(x, num_cols);
   ConstVectorRef bref(b, num_cols);
 
-  const double norm_b = bref.norm();
+  double norm_b = bref.norm();
   if (norm_b == 0.0) {
     xref.setZero();
-    summary.termination_type = LINEAR_SOLVER_SUCCESS;
-    summary.message = "Convergence. |b| = 0.";
+    summary.termination_type = TOLERANCE;
     return summary;
   }
 
@@ -95,16 +92,15 @@ LinearSolver::Summary ConjugateGradientsSolver::Solve(
   Vector z(num_cols);
   Vector tmp(num_cols);
 
-  const double tol_r = per_solve_options.r_tolerance * norm_b;
+  double tol_r = per_solve_options.r_tolerance * norm_b;
 
   tmp.setZero();
   A->RightMultiply(x, tmp.data());
   r = bref - tmp;
   double norm_r = r.norm();
+
   if (norm_r <= tol_r) {
-    summary.termination_type = LINEAR_SOLVER_SUCCESS;
-    summary.message =
-        StringPrintf("Convergence. |r| = %e <= %e.", norm_r, tol_r);
+    summary.termination_type = TOLERANCE;
     return summary;
   }
 
@@ -116,6 +112,8 @@ LinearSolver::Summary ConjugateGradientsSolver::Solve(
   for (summary.num_iterations = 1;
        summary.num_iterations < options_.max_num_iterations;
        ++summary.num_iterations) {
+    VLOG(3) << "cg iteration " << summary.num_iterations;
+
     // Apply preconditioner
     if (per_solve_options.preconditioner != NULL) {
       z.setZero();
@@ -126,9 +124,10 @@ LinearSolver::Summary ConjugateGradientsSolver::Solve(
 
     double last_rho = rho;
     rho = r.dot(z);
+
     if (IsZeroOrInfinity(rho)) {
-      summary.termination_type = LINEAR_SOLVER_FAILURE;
-      summary.message = StringPrintf("Numerical failure. rho = r'z = %e.", rho);
+      LOG(ERROR) << "Numerical failure. rho = " << rho;
+      summary.termination_type = FAILURE;
       break;
     };
 
@@ -137,9 +136,8 @@ LinearSolver::Summary ConjugateGradientsSolver::Solve(
     } else {
       double beta = rho / last_rho;
       if (IsZeroOrInfinity(beta)) {
-        summary.termination_type = LINEAR_SOLVER_FAILURE;
-        summary.message = StringPrintf(
-            "Numerical failure. beta = rho_n / rho_{n-1} = %e.", beta);
+        LOG(ERROR) << "Numerical failure. beta = " << beta;
+        summary.termination_type = FAILURE;
         break;
       }
       p = z + beta * p;
@@ -148,18 +146,18 @@ LinearSolver::Summary ConjugateGradientsSolver::Solve(
     Vector& q = z;
     q.setZero();
     A->RightMultiply(p.data(), q.data());
-    const double pq = p.dot(q);
+    double pq = p.dot(q);
+
     if ((pq <= 0) || IsInfinite(pq))  {
-      summary.termination_type = LINEAR_SOLVER_FAILURE;
-      summary.message = StringPrintf("Numerical failure. p'q = %e.", pq);
+      LOG(ERROR) << "Numerical failure. pq = " << pq;
+      summary.termination_type = FAILURE;
       break;
     }
 
-    const double alpha = rho / pq;
+    double alpha = rho / pq;
     if (IsInfinite(alpha)) {
-      summary.termination_type = LINEAR_SOLVER_FAILURE;
-      summary.message =
-          StringPrintf("Numerical failure. alpha = rho / pq = %e", alpha);
+      LOG(ERROR) << "Numerical failure. alpha " << alpha;
+      summary.termination_type = FAILURE;
       break;
     }
 
@@ -182,7 +180,7 @@ LinearSolver::Summary ConjugateGradientsSolver::Solve(
 
     // Quadratic model based termination.
     //   Q1 = x'Ax - 2 * b' x.
-    const double Q1 = -1.0 * xref.dot(bref + r);
+    double Q1 = -1.0 * xref.dot(bref + r);
 
     // For PSD matrices A, let
     //
@@ -206,23 +204,21 @@ LinearSolver::Summary ConjugateGradientsSolver::Solve(
     //   Journal of Computational and Applied Mathematics,
     //   124(1-2), 45-59, 2000.
     //
-    const double zeta = summary.num_iterations * (Q1 - Q0) / Q1;
+    double zeta = summary.num_iterations * (Q1 - Q0) / Q1;
+    VLOG(3) << "Q termination: zeta " << zeta
+            << " " << per_solve_options.q_tolerance;
     if (zeta < per_solve_options.q_tolerance) {
-      summary.termination_type = LINEAR_SOLVER_SUCCESS;
-      summary.message =
-          StringPrintf("Convergence: zeta = %e < %e",
-                       zeta,
-                       per_solve_options.q_tolerance);
+      summary.termination_type = TOLERANCE;
       break;
     }
     Q0 = Q1;
 
     // Residual based termination.
     norm_r = r. norm();
+    VLOG(3) << "R termination: norm_r " << norm_r
+            << " " << tol_r;
     if (norm_r <= tol_r) {
-      summary.termination_type = LINEAR_SOLVER_SUCCESS;
-      summary.message =
-          StringPrintf("Convergence. |r| = %e <= %e.", norm_r, tol_r);
+      summary.termination_type = TOLERANCE;
       break;
     }
   }

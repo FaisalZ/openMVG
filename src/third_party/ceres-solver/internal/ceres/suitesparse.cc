@@ -28,9 +28,6 @@
 //
 // Author: sameeragarwal@google.com (Sameer Agarwal)
 
-// This include must come before any #ifndef check on Ceres compile options.
-#include "ceres/internal/port.h"
-
 #ifndef CERES_NO_SUITESPARSE
 #include "ceres/suitesparse.h"
 
@@ -38,7 +35,6 @@
 #include "cholmod.h"
 #include "ceres/compressed_col_sparse_matrix_utils.h"
 #include "ceres/compressed_row_sparse_matrix.h"
-#include "ceres/linear_solver.h"
 #include "ceres/triplet_sparse_matrix.h"
 
 namespace ceres {
@@ -124,8 +120,7 @@ cholmod_dense* SuiteSparse::CreateDenseVector(const double* x,
     return v;
 }
 
-cholmod_factor* SuiteSparse::AnalyzeCholesky(cholmod_sparse* A,
-                                             string* message) {
+cholmod_factor* SuiteSparse::AnalyzeCholesky(cholmod_sparse* A) {
   // Cholmod can try multiple re-ordering strategies to find a fill
   // reducing ordering. Here we just tell it use AMD with automatic
   // matrix dependence choice of supernodal versus simplicial
@@ -135,35 +130,31 @@ cholmod_factor* SuiteSparse::AnalyzeCholesky(cholmod_sparse* A,
   cc_.supernodal = CHOLMOD_AUTO;
 
   cholmod_factor* factor = cholmod_analyze(A, &cc_);
+  CHECK_EQ(cc_.status, CHOLMOD_OK)
+      << "Cholmod symbolic analysis failed " << cc_.status;
+  CHECK_NOTNULL(factor);
+
   if (VLOG_IS_ON(2)) {
     cholmod_print_common(const_cast<char*>("Symbolic Analysis"), &cc_);
   }
 
-  if (cc_.status != CHOLMOD_OK) {
-    *message = StringPrintf("cholmod_analyze failed. error code: %d",
-                            cc_.status);
-    return NULL;
-  }
-
-  return CHECK_NOTNULL(factor);
+  return factor;
 }
 
 cholmod_factor* SuiteSparse::BlockAnalyzeCholesky(
     cholmod_sparse* A,
     const vector<int>& row_blocks,
-    const vector<int>& col_blocks,
-    string* message) {
+    const vector<int>& col_blocks) {
   vector<int> ordering;
   if (!BlockAMDOrdering(A, row_blocks, col_blocks, &ordering)) {
     return NULL;
   }
-  return AnalyzeCholeskyWithUserOrdering(A, ordering, message);
+  return AnalyzeCholeskyWithUserOrdering(A, ordering);
 }
 
 cholmod_factor* SuiteSparse::AnalyzeCholeskyWithUserOrdering(
     cholmod_sparse* A,
-    const vector<int>& ordering,
-    string* message) {
+    const vector<int>& ordering) {
   CHECK_EQ(ordering.size(), A->nrow);
 
   cc_.nmethods = 1;
@@ -171,36 +162,33 @@ cholmod_factor* SuiteSparse::AnalyzeCholeskyWithUserOrdering(
 
   cholmod_factor* factor  =
       cholmod_analyze_p(A, const_cast<int*>(&ordering[0]), NULL, 0, &cc_);
+  CHECK_EQ(cc_.status, CHOLMOD_OK)
+      << "Cholmod symbolic analysis failed " << cc_.status;
+  CHECK_NOTNULL(factor);
+
   if (VLOG_IS_ON(2)) {
     cholmod_print_common(const_cast<char*>("Symbolic Analysis"), &cc_);
   }
-  if (cc_.status != CHOLMOD_OK) {
-    *message = StringPrintf("cholmod_analyze failed. error code: %d",
-                            cc_.status);
-    return NULL;
-  }
 
-  return CHECK_NOTNULL(factor);
+  return factor;
 }
 
 cholmod_factor* SuiteSparse::AnalyzeCholeskyWithNaturalOrdering(
-    cholmod_sparse* A,
-    string* message) {
+    cholmod_sparse* A) {
   cc_.nmethods = 1;
   cc_.method[0].ordering = CHOLMOD_NATURAL;
   cc_.postorder = 0;
 
   cholmod_factor* factor  = cholmod_analyze(A, &cc_);
+  CHECK_EQ(cc_.status, CHOLMOD_OK)
+      << "Cholmod symbolic analysis failed " << cc_.status;
+  CHECK_NOTNULL(factor);
+
   if (VLOG_IS_ON(2)) {
     cholmod_print_common(const_cast<char*>("Symbolic Analysis"), &cc_);
   }
-  if (cc_.status != CHOLMOD_OK) {
-    *message = StringPrintf("cholmod_analyze failed. error code: %d",
-                            cc_.status);
-    return NULL;
-  }
 
-  return CHECK_NOTNULL(factor);
+  return factor;
 }
 
 bool SuiteSparse::BlockAMDOrdering(const cholmod_sparse* A,
@@ -245,9 +233,7 @@ bool SuiteSparse::BlockAMDOrdering(const cholmod_sparse* A,
   return true;
 }
 
-LinearSolverTerminationType SuiteSparse::Cholesky(cholmod_sparse* A,
-                                                  cholmod_factor* L,
-                                                  string* message) {
+bool SuiteSparse::Cholesky(cholmod_sparse* A, cholmod_factor* L) {
   CHECK_NOTNULL(A);
   CHECK_NOTNULL(L);
 
@@ -259,7 +245,7 @@ LinearSolverTerminationType SuiteSparse::Cholesky(cholmod_sparse* A,
   cc_.print = 0;
 
   cc_.quick_return_if_not_posdef = 1;
-  int cholmod_status = cholmod_factorize(A, L, &cc_);
+  int status = cholmod_factorize(A, L, &cc_);
   cc_.print = old_print_level;
 
   // TODO(sameeragarwal): This switch statement is not consistent. It
@@ -271,73 +257,84 @@ LinearSolverTerminationType SuiteSparse::Cholesky(cholmod_sparse* A,
   // (e.g. out of memory).
   switch (cc_.status) {
     case CHOLMOD_NOT_INSTALLED:
-      *message = "CHOLMOD failure: Method not installed.";
-      return LINEAR_SOLVER_FATAL_ERROR;
+      LOG(WARNING) << "CHOLMOD failure: Method not installed.";
+      return false;
     case CHOLMOD_OUT_OF_MEMORY:
-      *message = "CHOLMOD failure: Out of memory.";
-      return LINEAR_SOLVER_FATAL_ERROR;
+      LOG(WARNING) << "CHOLMOD failure: Out of memory.";
+      return false;
     case CHOLMOD_TOO_LARGE:
-      *message = "CHOLMOD failure: Integer overflow occured.";
-      return LINEAR_SOLVER_FATAL_ERROR;
+      LOG(WARNING) << "CHOLMOD failure: Integer overflow occured.";
+      return false;
     case CHOLMOD_INVALID:
-      *message = "CHOLMOD failure: Invalid input.";
-      return LINEAR_SOLVER_FATAL_ERROR;
+      LOG(WARNING) << "CHOLMOD failure: Invalid input.";
+      return false;
     case CHOLMOD_NOT_POSDEF:
-      *message = "CHOLMOD warning: Matrix not positive definite.";
-      return LINEAR_SOLVER_FAILURE;
+      // TODO(sameeragarwal): These two warnings require more
+      // sophisticated handling going forward. For now we will be
+      // strict and treat them as failures.
+      LOG(WARNING) << "CHOLMOD warning: Matrix not positive definite.";
+      return false;
     case CHOLMOD_DSMALL:
-      *message = "CHOLMOD warning: D for LDL' or diag(L) or "
-                "LL' has tiny absolute value.";
-      return LINEAR_SOLVER_FAILURE;
+      LOG(WARNING) << "CHOLMOD warning: D for LDL' or diag(L) or "
+                   << "LL' has tiny absolute value.";
+      return false;
     case CHOLMOD_OK:
-      if (cholmod_status != 0) {
-        return LINEAR_SOLVER_SUCCESS;
+      if (status != 0) {
+        return true;
       }
-
-      *message = "CHOLMOD failure: cholmod_factorize returned false "
-          "but cholmod_common::status is CHOLMOD_OK."
-          "Please report this to ceres-solver@googlegroups.com.";
-      return LINEAR_SOLVER_FATAL_ERROR;
+      LOG(WARNING) << "CHOLMOD failure: cholmod_factorize returned zero "
+                   << "but cholmod_common::status is CHOLMOD_OK."
+                   << "Please report this to ceres-solver@googlegroups.com.";
+      return false;
     default:
-      *message =
-          StringPrintf("Unknown cholmod return code: %d. "
-                       "Please report this to ceres-solver@googlegroups.com.",
-                       cc_.status);
-      return LINEAR_SOLVER_FATAL_ERROR;
+      LOG(WARNING) << "Unknown cholmod return code. "
+                   << "Please report this to ceres-solver@googlegroups.com.";
+      return false;
   }
-
-  return LINEAR_SOLVER_FATAL_ERROR;
+  return false;
 }
 
 cholmod_dense* SuiteSparse::Solve(cholmod_factor* L,
-                                  cholmod_dense* b,
-                                  string* message) {
+                                  cholmod_dense* b) {
   if (cc_.status != CHOLMOD_OK) {
-    *message = "cholmod_solve failed. CHOLMOD status is not CHOLMOD_OK";
+    LOG(WARNING) << "CHOLMOD status NOT OK";
     return NULL;
   }
 
   return cholmod_solve(CHOLMOD_A, L, b, &cc_);
 }
 
-bool SuiteSparse::ApproximateMinimumDegreeOrdering(cholmod_sparse* matrix,
-                                                   int* ordering) {
-  return cholmod_amd(matrix, NULL, 0, ordering, &cc_);
+cholmod_dense* SuiteSparse::SolveCholesky(cholmod_sparse* A,
+                                          cholmod_factor* L,
+                                          cholmod_dense* b) {
+  CHECK_NOTNULL(A);
+  CHECK_NOTNULL(L);
+  CHECK_NOTNULL(b);
+
+  if (Cholesky(A, L)) {
+    return Solve(L, b);
+  }
+
+  return NULL;
 }
 
-bool SuiteSparse::ConstrainedApproximateMinimumDegreeOrdering(
+void SuiteSparse::ApproximateMinimumDegreeOrdering(cholmod_sparse* matrix,
+                                                   int* ordering) {
+  cholmod_amd(matrix, NULL, 0, ordering, &cc_);
+}
+
+void SuiteSparse::ConstrainedApproximateMinimumDegreeOrdering(
     cholmod_sparse* matrix,
     int* constraints,
     int* ordering) {
 #ifndef CERES_NO_CAMD
-  return cholmod_camd(matrix, NULL, 0, constraints, ordering, &cc_);
+  cholmod_camd(matrix, NULL, 0, constraints, ordering, &cc_);
 #else
   LOG(FATAL) << "Congratulations you have found a bug in Ceres."
              << "Ceres Solver was compiled with SuiteSparse "
              << "version 4.1.0 or less. Calling this function "
              << "in that case is a bug. Please contact the"
              << "the Ceres Solver developers.";
-  return false;
 #endif
 }
 

@@ -34,8 +34,6 @@
 #ifndef CERES_INTERNAL_LOW_RANK_INVERSE_HESSIAN_H_
 #define CERES_INTERNAL_LOW_RANK_INVERSE_HESSIAN_H_
 
-#include <list>
-
 #include "ceres/internal/eigen.h"
 #include "ceres/linear_operator.h"
 
@@ -95,11 +93,11 @@ class LowRankInverseHessian : public LinearOperator {
   const int num_parameters_;
   const int max_num_corrections_;
   const bool use_approximate_eigenvalue_scaling_;
+  int num_corrections_;
   double approximate_eigenvalue_scale_;
-  ColMajorMatrix delta_x_history_;
-  ColMajorMatrix delta_gradient_history_;
+  Matrix delta_x_history_;
+  Matrix delta_gradient_history_;
   Vector delta_x_dot_delta_gradient_;
-  std::list<int> indices_;
 };
 
 }  // namespace internal

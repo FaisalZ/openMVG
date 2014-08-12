@@ -29,9 +29,6 @@
 // Author: kushalav@google.com (Avanish Kushal)
 //         sameeragarwal@google.com (Sameer Agarwal)
 
-// This include must come before any #ifndef check on Ceres compile options.
-#include "ceres/internal/port.h"
-
 #ifndef CERES_NO_SUITESPARSE
 
 #include "ceres/visibility.h"

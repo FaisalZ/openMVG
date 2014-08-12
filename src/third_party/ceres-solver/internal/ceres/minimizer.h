@@ -107,14 +107,13 @@ class Minimizer {
           options.line_search_sufficient_curvature_decrease;
       max_line_search_step_expansion =
           options.max_line_search_step_expansion;
-      is_silent = (options.logging_type == SILENT);
+      is_silent = false;
       evaluator = NULL;
       trust_region_strategy = NULL;
       jacobian = NULL;
       callbacks = options.callbacks;
       inner_iteration_minimizer = NULL;
       inner_iteration_tolerance = options.inner_iteration_tolerance;
-      is_constrained = false;
     }
 
     int max_num_iterations;
@@ -181,12 +180,9 @@ class Minimizer {
 
     Minimizer* inner_iteration_minimizer;
     double inner_iteration_tolerance;
-
-    // Use a bounds constrained optimization algorithm.
-    bool is_constrained;
   };
 
-  static bool RunCallbacks(const Options& options,
+  static bool RunCallbacks(const vector<IterationCallback*> callbacks,
                            const IterationSummary& iteration_summary,
                            Solver::Summary* summary);
 

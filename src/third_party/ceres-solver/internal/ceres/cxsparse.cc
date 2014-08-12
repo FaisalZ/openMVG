@@ -28,9 +28,6 @@
 //
 // Author: strandmark@google.com (Petter Strandmark)
 
-// This include must come before any #ifndef check on Ceres compile options.
-#include "ceres/internal/port.h"
-
 #ifndef CERES_NO_CXSPARSE
 
 #include "ceres/cxsparse.h"
@@ -178,8 +175,8 @@ cs_di CXSparse::CreateSparseMatrixTransposeView(CompressedRowSparseMatrix* A) {
 
 cs_di* CXSparse::CreateSparseMatrix(TripletSparseMatrix* tsm) {
   cs_di_sparse tsm_wrapper;
-  tsm_wrapper.nzmax = tsm->num_nonzeros();
-  tsm_wrapper.nz = tsm->num_nonzeros();
+  tsm_wrapper.nzmax = tsm->num_nonzeros();;
+  tsm_wrapper.nz = tsm->num_nonzeros();;
   tsm_wrapper.m = tsm->num_rows();
   tsm_wrapper.n = tsm->num_cols();
   tsm_wrapper.p = tsm->mutable_cols();
