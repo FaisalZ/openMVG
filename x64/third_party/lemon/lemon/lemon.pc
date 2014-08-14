@@ -1,0 +1,10 @@
+prefix=C:/Program Files/openMVG
+exec_prefix=C:/Program Files/openMVG/bin
+libdir=C:/Program Files/openMVG/lib
+includedir=C:/Program Files/openMVG/include
+
+Name: LEMON
+Description: Library for Efficient Modeling and Optimization in Networks
+Version: 1.3
+Libs: -L${libdir} -lemon     
+Cflags: -I${includedir}
